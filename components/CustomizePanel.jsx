@@ -11,7 +11,6 @@ import { toast } from "sonner";
 import LivePreview from './LivePreview';
 import AdvancedCSSEditor from './AdvancedCSSEditor';
 import PreviewControls from './PreviewControls';
-import LiveCSSEditor from './LiveCSSEditor';
 
 const colorfulThemes = {
     default: {
@@ -1258,31 +1257,24 @@ label, .form__label {
 
             <TabsContent value="code" className="mt-0">
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
-                    <LiveCSSEditor 
+                    <AdvancedCSSEditor 
                         settings={settings} 
-                        onSettingsChange={updateSettings}
                         generateCSS={generateCSS}
                     />
-
-                    {/* Live Preview Card */}
                     <Card className="bg-slate-800/50 border-slate-700/50 lg:sticky lg:top-4 h-fit">
                         <CardContent className="p-4 md:p-6 space-y-4">
                             <h3 className="text-white font-semibold text-lg">Live Preview</h3>
-
                             <PreviewControls 
                                 viewport={viewport}
                                 onViewportChange={setViewport}
                                 customContent={customContent}
                                 onContentChange={setCustomContent}
                             />
-
                             <LivePreview 
                                 settings={settings}
                                 viewport={viewport}
                                 customContent={customContent}
                             />
-
-                            {/* Color Swatches */}
                             <div className="pt-4 border-t border-slate-700">
                                 <Label className="text-slate-400 text-sm mb-3 block">Color Palette</Label>
                                 <div className="flex gap-2 flex-wrap">

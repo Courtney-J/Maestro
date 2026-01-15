@@ -4,6 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Wand2, Copy, Check } from 'lucide-react';
 import { toast } from "sonner";
 
+let cssCompletionRegistered = false;
+let htmlCompletionRegistered = false;
+
 export default function MonacoEditor({ 
     value, 
     onChange, 
@@ -17,7 +20,6 @@ export default function MonacoEditor({
     const handleEditorDidMount = (editor, monaco) => {
         editorRef.current = editor;
         
-        // Configure CSS language features
         if (language === 'css') {
             monaco.languages.css.cssDefaults.setOptions({
                 validate: true,
@@ -40,9 +42,40 @@ export default function MonacoEditor({
                     idSelector: 'warning'
                 }
             });
+
+            if (!cssCompletionRegistered) {
+                monaco.languages.registerCompletionItemProvider('css', {
+                    provideCompletionItems: () => {
+                        const suggestions = [
+                            {
+                                label: '.btn-primary',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '.btn-primary {\n  background: linear-gradient(135deg, #667eea, #764ba2);\n  color: #ffffff;\n  padding: 12px 24px;\n  border-radius: 999px;\n}\n',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Rounded primary CTA button'
+                            },
+                            {
+                                label: '.announcement-bar',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '.announcement-bar {\n  background: linear-gradient(90deg, #6366f1, #8b5cf6);\n  color: #ffffff;\n  padding: 10px 20px;\n  text-align: center;\n}\n',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Top-of-site promo bar'
+                            },
+                            {
+                                label: '.product-card',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '.product-card {\n  background: #020617;\n  border-radius: 16px;\n  padding: 16px;\n  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.6);\n}\n',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Elevated product card container'
+                            }
+                        ];
+                        return { suggestions };
+                    }
+                });
+                cssCompletionRegistered = true;
+            }
         }
 
-        // Configure HTML language features
         if (language === 'html') {
             monaco.languages.html.htmlDefaults.setOptions({
                 validate: true,
@@ -61,6 +94,31 @@ export default function MonacoEditor({
                     wrapAttributes: 'auto'
                 }
             });
+
+            if (!htmlCompletionRegistered) {
+                monaco.languages.registerCompletionItemProvider('html', {
+                    provideCompletionItems: () => {
+                        const suggestions = [
+                            {
+                                label: 'hero-section',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '<section class="hero-section">\n  <div class="hero-content">\n    <h1 class="hero-title">Summer Collection 2024</h1>\n    <p class="hero-subtitle">Discover the latest trends in fashion</p>\n    <button class="hero-btn">Shop Now</button>\n  </div>\n</section>',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Hero section layout'
+                            },
+                            {
+                                label: 'product-card',
+                                kind: monaco.languages.CompletionItemKind.Snippet,
+                                insertText: '<div class="product-card">\n  <div class="product-image">\n    <img src="" alt="Product" />\n  </div>\n  <div class="product-info">\n    <h3 class="product-title">Product name</h3>\n    <p class="product-vendor">Vendor</p>\n    <div class="product-price">\n      <span class="price-current">$99</span>\n      <span class="price-compare">$129</span>\n    </div>\n    <button class="btn-primary">Add to Cart</button>\n  </div>\n</div>',
+                                insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
+                                documentation: 'Product card markup'
+                            }
+                        ];
+                        return { suggestions };
+                    }
+                });
+                htmlCompletionRegistered = true;
+            }
         }
     };
 

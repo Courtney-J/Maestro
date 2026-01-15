@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -7,6 +6,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Send, Loader2, Sparkles, Copy, Check, Bot, User, Trash2 } from 'lucide-react';
 import { toast } from "sonner";
 import ReactMarkdown from 'react-markdown';
+
+let base44Client;
+base44Client = typeof window !== 'undefined' ? window.base44 : null;
 
 export default function CSSExpertChat() {
     const [messages, setMessages] = useState([]);
@@ -21,8 +23,8 @@ export default function CSSExpertChat() {
     }, []);
 
     useEffect(() => {
-        if (conversation?.id) {
-            const unsubscribe = base44.agents.subscribeToConversation(conversation.id, (data) => {
+        if (conversation?.id && base44Client?.agents) {
+            const unsubscribe = base44Client.agents.subscribeToConversation(conversation.id, (data) => {
                 setMessages(data.messages || []);
             });
             return () => unsubscribe();
@@ -37,7 +39,11 @@ export default function CSSExpertChat() {
 
     const initConversation = async () => {
         try {
-            const newConversation = await base44.agents.createConversation({
+            if (!base44Client?.agents) {
+                toast.error('CSS expert is not configured yet');
+                return;
+            }
+            const newConversation = await base44Client.agents.createConversation({
                 agent_name: "css_expert",
                 metadata: { name: "CSS Help Session" }
             });
@@ -55,7 +61,11 @@ export default function CSSExpertChat() {
         setIsLoading(true);
 
         try {
-            await base44.agents.addMessage(conversation, {
+            if (!base44Client?.agents) {
+                toast.error('CSS expert is not configured yet');
+                return;
+            }
+            await base44Client.agents.addMessage(conversation, {
                 role: 'user',
                 content: userMessage
             });
